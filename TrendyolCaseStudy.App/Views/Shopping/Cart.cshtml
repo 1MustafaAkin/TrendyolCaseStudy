@@ -1,0 +1,100 @@
+﻿@model IEnumerable<TrendyolCaseStudy.Entity.Concrete.OrderDetails>
+
+@{
+    ViewBag.Title = "Cart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Cart</h2>
+
+<table class="table table-hover" style="text-align:center">
+    <thead>
+        <tr>
+            <td style="font-size:20px">Sepetten Çıkar</td>
+            <td style="font-size:20px">Kategori Adı</td>
+            <td style="font-size:20px">Ürün Görseli</td>
+            <td style="font-size:20px">Ürün Adı</td>
+            <td style="font-size:20px">Ürün Miktarı</td>
+            <td style="font-size:20px">Ürün Fiyatı</td>
+            <td style="font-size:20px">Toplam İndirim</td>
+        </tr>
+    </thead>
+    <tbody>
+
+        @{
+            decimal totalAmount = 0;
+            decimal totalAmountBeforeDiscount = 0;
+            decimal deliveryCost = 0;
+            var db = new TrendyolCaseStudy.Dal.Mapping.Context();
+
+            foreach (var item in Model)
+            {
+                totalAmount += item.TotalAmount;
+                totalAmountBeforeDiscount += item.TotalAmountBeforeDiscount;
+                deliveryCost = item.DeliveryCost;
+                <tr>
+                    <td>
+                        <a href="@Url.Action("RemoveFromCart","Shopping",new { id=item.OrderDetailID })" style="font-size:20pt">
+                            <span class="glyphicon glyphicon-trash btn btn-danger"></span>
+                        </a>
+                    </td>
+                    <td>@db.SubCategories.FirstOrDefault(x => x.SubCategoryID == item.Product.SubCategoryID).Name</td>
+                    <td>
+                        <img src="@Url.Content(item.Product.ImageUrl)" style="height:15%" />
+                    </td>
+                    <td>@item.Product.ProductName</td>
+                    <td class="text-center">@item.Quantity Adet</td>
+                    <td>@string.Format("{0:C0}", item.Product.UnitPrice)</td>
+                    @if (item.Quantity < 4)
+                    {
+                        <td>@string.Format("{0:C0}", item.Quantity)</td>
+                    }
+                    else
+                    {
+                        <td>@string.Format("{0:P0}", item.Discount)</td>
+                    }
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+<hr />
+
+@{
+    if (Model.ToList().Count == 0)
+    {
+        <span class="lead">
+            Sepetiniz Boş
+        </span>
+    }
+    else
+    {
+        <span class="lead">
+            <b>
+                İndirimsiz Fiyat = @string.Format("{0:C2}", totalAmountBeforeDiscount)
+            </b>
+        </span>
+        <hr />
+        <span class="lead">
+            <b>
+                İndirimli Fiyat = @string.Format("{0:C2}", totalAmount)
+            </b>
+        </span>
+        <hr />
+        <span class="lead">
+            <b>
+                Kargo Ücreti = @string.Format("{0:C2}", deliveryCost)
+            </b>
+        </span>
+        <hr />
+        <span class="lead">
+            <b>
+                Ödenmesi Gereken Toplam Tutar = @string.Format("{0:C2}", totalAmount + deliveryCost)
+            </b>
+        </span>
+
+        <hr />
+        @Html.ActionLink("Siparişi Tamamla", "GoToPayment", "Shopping", null, new { @class = "btn btn-success", @style = "float:right" })
+    }
+}

@@ -1,0 +1,30 @@
+﻿@model IEnumerable<TrendyolCaseStudy.Entity.Concrete.Product>
+@{
+    ViewBag.Title = "HomePage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="margin-top:50px">
+    @{
+        foreach (var item in Model)
+        {
+            <div class="col-md-4">
+                <div class="thumbnail">
+                    <img src="@Url.Content(item.ImageUrl)"/>
+                    <div class="caption">
+                        <h4 style="height:70px">
+                            @item.ProductName - @string.Format("{0:C2}", item.UnitPrice)
+                        </h4>
+                        <p style="height:60px;overflow:auto">
+                            @item.Description
+                        </p>
+                        <p>
+                            @Html.ActionLink("Ürün Detayı", "ProductDetail", "Product", new { id = item.ProductID }, new { @class = "btn btn-primary form-control" })
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+</div>
+

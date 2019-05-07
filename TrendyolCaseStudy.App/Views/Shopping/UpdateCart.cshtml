@@ -1,0 +1,75 @@
+﻿@model IEnumerable<TrendyolCaseStudy.Entity.Concrete.OrderDetails>
+
+@{
+    ViewBag.Title = "UpdateCart";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>Ürün Adi</th>
+            <th>Ürün Görseli</th>
+            <th>Sepetteki Miktar</th>
+            <th>Stok Miktarı</th>
+            <th>Sepetten Çıkar</th>
+            <th>Otomatik Güncelle</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Product.ProductName</td>
+                    <td><img src="@Url.Content(item.Product.ImageUrl)" style="height:15%" /></td>
+                    <td>@item.Quantity Adet</td>
+                    <td>
+                        @{
+                            if (item.Quantity < item.Product.UnitsInStock)
+                            {
+                                <label style="font-weight:bold" class="label label-danger">
+                                    @item.Product.UnitsInStock Adet
+                                </label>
+                            }
+                            else
+                            {
+                                <label>
+                                    @item.Product.UnitsInStock Adet
+                                </label>
+                            }
+                        }
+                    </td>
+                    <td>
+                        <a href="@Url.Action("RemoveFromCart","Shopping",new { id=item.OrderDetailID })" style="font-size:20pt">
+                            <span class="glyphicon glyphicon-trash btn btn-danger"></span>
+                        </a>
+                    </td>
+                    <td>
+                        @using (Html.BeginForm("UpdateQuantity", "Shopping", new { id = item.OrderDetailID }, FormMethod.Post))
+                        {
+                            <input type="number" value="@item.Product.UnitsInStock" min="1" max="@item.Product.UnitsInStock" name="quantity" />
+                            <button type="submit">
+                                <span style="color:green" class="glyphicon glyphicon-ok"></span>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+
+@{
+    if (Model.ToList().Count == 0)
+    {
+        <span class="lead">
+            Sepetiniz Boş
+        </span>
+    }
+    else
+    {
+        @Html.ActionLink("Siparişi Tamamla", "GoToPayment", "Shopping", null, new { @class = "btn btn-success", @style = "float:right" })
+    }
+}

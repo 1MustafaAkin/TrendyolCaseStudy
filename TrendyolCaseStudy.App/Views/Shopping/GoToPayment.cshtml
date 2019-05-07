@@ -1,0 +1,103 @@
+﻿@model TrendyolCaseStudy.Entity.Concrete.Customer
+
+@{
+    ViewBag.Title = "GoToPayment";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="margin-top:50px"></div>
+<table class="table table-bordered" style="text-align:center">
+    <thead>
+        <tr>
+            <td style="font-size:20px">Ürün Adı</td>
+            <td style="font-size:20px">Ürün Miktarı</td>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            decimal toplamTutar = 0;
+            foreach (var item in ViewBag.OrderDetails as IEnumerable<TrendyolCaseStudy.Entity.Concrete.OrderDetails>)
+            {
+                if (item.Quantity > 0)
+                {
+
+                    <tr>
+                        <td>@item.Product.ProductName</td>
+                        <td class="text-center">@item.Quantity Adet</td>
+                    </tr>
+                    toplamTutar += item.TotalAmount;
+                }
+
+            }
+        }
+    </tbody>
+</table>
+
+<span class="lead">
+    <b>
+        Ödenmesi Gereken Toplam Tutar = @string.Format("{0:C2}", toplamTutar)
+    </b>
+</span>
+<p>
+    @Html.ActionLink("Sepetini Düzenle", "Cart", "Shopping", null, new { @class = "btn btn-warning" })
+</p>
+
+@if (toplamTutar > 0)
+{
+    <hr />
+
+    using (Html.BeginForm("CompleteShopping", "Shopping", FormMethod.Post))
+    {
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h5>Adres Bilgileri</h5>
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <label>Adınız:</label>
+                    </div>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(x => x.FirstName, new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <label>Soyadınız:</label>
+                    </div>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(x => x.LastName, new { @class = "form-control", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <label>Adres:</label>
+                    </div>
+                    <div class="col-md-10">
+                        @Html.TextAreaFor(x => x.Address, new { @class = "form-control", rows = "3", @required = "required" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <label>Şehriniz:</label>
+                    </div>
+                    <div class="col-md-10">
+                        @Html.TextBoxFor(x => x.City, new { @class = "form-control" })
+                    </div>
+                </div>
+                <div class="form-group">
+
+                    <div class="col-md-10 col-md-offset-2">
+                        <label>
+                            Bilgilerimi de Güncelle
+                        </label>
+                        <input type="checkbox" name="update" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>
+            <input type="submit" class="btn btn-success" value="Alışverişi Tamamla" />
+        </p>
+    }
+}
+
+

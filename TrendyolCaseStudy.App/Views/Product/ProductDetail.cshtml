@@ -1,0 +1,65 @@
+﻿@model TrendyolCaseStudy.Entity.Concrete.Product
+
+@{
+    ViewBag.Title = "ProductDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container">
+    <div class="row" style="margin-top:50px">
+        <div class="col-md-6">
+            <div class="thumbnail">
+                <img src="@Url.Content(Model.ImageUrl)" style="height:600px;" />
+            </div>
+        </div>
+        <div class="col-md-6" style="font-size:20px">
+            <p class="lead">@Model.ProductName</p>
+            <p class="lead" style="margin-top:10px"><strong>Açıklama : </strong>@Model.Description</p>
+            <p class="lead" style="margin-top:10px"><strong>Fiyatı : </strong> @string.Format("{0:C2}", @Model.UnitPrice)</p>
+            <p class="lead"><span style="background-color:brown;color:white"><strong>Stok  : </strong> @Model.UnitsInStock</span></p>
+            @using (Html.BeginForm("AddToCart", "Shopping", new { id = Model.ProductID }, FormMethod.Post))
+            {
+
+                <p class="lead">
+                    <strong>Miktar: </strong>
+                    @{
+                        if (Model.UnitsInStock == 0)
+                        {
+                            <input type="number" name="miktar" value="0" min="0" max="@Model.UnitsInStock" onchange="denetle(this,@Model.UnitsInStock)" />
+
+                        }
+                        else
+                        {
+                            <input type="number" name="miktar" value="1" min="1" max="@Model.UnitsInStock" onchange="denetle(this,@Model.UnitsInStock)" />
+                        }
+                    }
+                </p>
+                <br />
+                <br />
+                if (Model.UnitsInStock == 0)
+                {
+                    <button type="submit" class="btn btn-info" disabled>Sepete Ekle</button>
+
+                }
+                else
+                {
+                    <button type="submit" class="btn btn-info">Sepete Ekle</button>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+
+@section scripts{
+    <script>
+        function denetle(inputElement, maxValue) {
+            var value = $(inputElement).val();
+            if (value > maxValue) {
+                $(inputElement).val(maxValue);
+            }
+        }
+    </script>
+}
+
+
